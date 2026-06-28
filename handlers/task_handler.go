@@ -13,7 +13,6 @@ func isValidStatus(s models.Status) bool {
 	return s == models.StatusTodo || s == models.StatusInProgress || s == models.StatusDone
 }
 
-// POST /tasks - ساخت تسک جدید
 func CreateTask(c *gin.Context) {
 	var task models.Task
 
@@ -42,7 +41,6 @@ func CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, task)
 }
 
-// GET /tasks - گرفتن همه تسک‌ها
 func GetAllTasks(c *gin.Context) {
 	var tasks []models.Task
 
@@ -54,7 +52,6 @@ func GetAllTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-// GET /tasks/:id - گرفتن یک تسک با ID
 func GetTaskByID(c *gin.Context) {
 	id := c.Param("id")
 	var task models.Task
@@ -67,7 +64,6 @@ func GetTaskByID(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-// PUT /tasks/:id - آپدیت تسک
 func UpdateTask(c *gin.Context) {
 	id := c.Param("id")
 	var task models.Task
@@ -102,7 +98,6 @@ func UpdateTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task)
 }
 
-// DELETE /tasks/:id - حذف تسک
 func DeleteTask(c *gin.Context) {
 	id := c.Param("id")
 	var task models.Task
