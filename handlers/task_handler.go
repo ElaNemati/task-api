@@ -18,10 +18,13 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	if err := validations.ValidateCreateTask(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	fieldsErr, err := validations.ValidateCreateTask(&task)
+	if err != nil {
+		if fieldsErr != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"validation_errors": fieldsErr})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
@@ -75,10 +78,13 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	if err := validations.ValidateUpdateTask(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+	fieldsErr, err := validations.ValidateUpdateTask(&input)
+	if err != nil {
+		if fieldsErr != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"validation_errors": fieldsErr})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		}
 		return
 	}
 
