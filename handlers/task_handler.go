@@ -2,16 +2,13 @@ package handlers
 
 import (
 	"net/http"
+	"task-api/validations"
 
 	"task-api/database"
 	"task-api/models"
 
 	"github.com/gin-gonic/gin"
 )
-
-func isValidStatus(s models.Status) bool {
-	return s == models.StatusTodo || s == models.StatusInProgress || s == models.StatusDone
-}
 
 func CreateTask(c *gin.Context) {
 	var task models.Task
@@ -21,16 +18,15 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	if task.Title == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "title is required"})
+	if err := validations.ValidateCreateTask(&task); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
 	if task.Status == "" {
 		task.Status = models.StatusTodo
-	} else if !isValidStatus(task.Status) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "status must be 'todo', 'in progress', or 'done'"})
-		return
 	}
 
 	if result := database.DB.Create(&task); result.Error != nil {
@@ -79,8 +75,10 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	if input.Status != "" && !isValidStatus(input.Status) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "status must be 'todo', 'in progress', or 'done'"})
+	if err := validations.ValidateUpdateTask(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -94,7 +92,12 @@ func UpdateTask(c *gin.Context) {
 		task.Status = input.Status
 	}
 
-	database.DB.Save(&task)
+	if result := database.DB.Save(&task); result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": result.Error.Error(),
+		})
+		return
+	}
 	c.JSON(http.StatusOK, task)
 }
 
@@ -107,6 +110,11 @@ func DeleteTask(c *gin.Context) {
 		return
 	}
 
-	database.DB.Delete(&task)
+	if result := database.DB.Delete(&task); result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": result.Error.Error(),
+		})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "task deleted successfully"})
 }
