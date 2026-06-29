@@ -2,9 +2,10 @@ package main
 
 import (
 	"log"
-
+	"log/slog"
 	"task-api/database"
 	"task-api/handlers"
+	"task-api/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -15,7 +16,14 @@ func main() {
 		log.Println("No .env file found")
 	}
 
+	closeLogs, err := logger.Init()
+	if err != nil {
+		log.Fatal("Failed to initialize logger:", err)
+	}
+	defer closeLogs()
+
 	database.Connect()
+	slog.Info("Server starting", "port", "8080")
 
 	r := gin.Default()
 
