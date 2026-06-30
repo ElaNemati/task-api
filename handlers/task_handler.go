@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"task-api/database"
 	"task-api/models"
+	"task-api/response"
 	"task-api/validations"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ func CreateTask(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&task); err != nil {
 		slog.Warn("CreateTask: invalid request body", "error", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -23,9 +24,9 @@ func CreateTask(c *gin.Context) {
 	if err != nil {
 		slog.Warn("CreateTask: validation failed", "error", err.Error())
 		if fieldsErr != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"validation_errors": fieldsErr})
+			response.ValidationError(c, http.StatusBadRequest, "validation failed", fieldsErr)
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			response.Error(c, http.StatusBadRequest, err.Error())
 		}
 		return
 	}
@@ -36,12 +37,12 @@ func CreateTask(c *gin.Context) {
 
 	if result := database.DB.Create(&task); result.Error != nil {
 		slog.Error("CreateTask: database error", "error", result.Error.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		response.Error(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
 	slog.Info("CreateTask: task created successfully", "task_id", task.ID, "title", task.Title)
-	c.JSON(http.StatusCreated, task)
+	response.Success(c, http.StatusCreated, "task created successfully", task)
 }
 
 func GetAllTasks(c *gin.Context) {
@@ -49,12 +50,12 @@ func GetAllTasks(c *gin.Context) {
 
 	if result := database.DB.Find(&tasks); result.Error != nil {
 		slog.Error("GetAllTasks: database error", "error", result.Error.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
+		response.Error(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
 	slog.Info("GetAllTasks: tasks retrieved", "count", len(tasks))
-	c.JSON(http.StatusOK, tasks)
+	response.Success(c, http.StatusOK, "tasks retrieved successfully", tasks)
 }
 
 func GetTaskByID(c *gin.Context) {
@@ -63,12 +64,12 @@ func GetTaskByID(c *gin.Context) {
 
 	if result := database.DB.First(&task, id); result.Error != nil {
 		slog.Warn("GetTaskByID: task not found", "id", id)
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		response.Error(c, http.StatusNotFound, "task not found")
 		return
 	}
 
 	slog.Info("GetTaskByID: task retrieved", "task_id", id)
-	c.JSON(http.StatusOK, task)
+	response.Success(c, http.StatusOK, "task retrieved successfully", task)
 }
 
 func UpdateTask(c *gin.Context) {
@@ -77,14 +78,14 @@ func UpdateTask(c *gin.Context) {
 
 	if result := database.DB.First(&task, id); result.Error != nil {
 		slog.Warn("UpdateTask: task not found", "id", id)
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		response.Error(c, http.StatusNotFound, "task not found")
 		return
 	}
 
 	var input models.Task
 	if err := c.ShouldBindJSON(&input); err != nil {
 		slog.Warn("UpdateTask: invalid request body", "id", id, "error", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		response.Error(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -92,9 +93,9 @@ func UpdateTask(c *gin.Context) {
 	if err != nil {
 		slog.Warn("UpdateTask: validation failed", "id", id, "error", err.Error())
 		if fieldsErr != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"validation_errors": fieldsErr})
+			response.ValidationError(c, http.StatusBadRequest, "validation failed", fieldsErr)
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			response.Error(c, http.StatusBadRequest, err.Error())
 		}
 		return
 	}
@@ -111,14 +112,12 @@ func UpdateTask(c *gin.Context) {
 
 	if result := database.DB.Save(&task); result.Error != nil {
 		slog.Error("UpdateTask: database error", "id", id, "error", result.Error.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": result.Error.Error(),
-		})
+		response.Error(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
 	slog.Info("UpdateTask: task updated successfully", "task_id", id)
-	c.JSON(http.StatusOK, task)
+	response.Success(c, http.StatusOK, "task updated successfully", task)
 }
 
 func DeleteTask(c *gin.Context) {
@@ -127,18 +126,16 @@ func DeleteTask(c *gin.Context) {
 
 	if result := database.DB.First(&task, id); result.Error != nil {
 		slog.Warn("DeleteTask: task not found", "id", id)
-		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
+		response.Error(c, http.StatusNotFound, "task not found")
 		return
 	}
 
 	if result := database.DB.Delete(&task); result.Error != nil {
 		slog.Error("DeleteTask: database error", "id", id, "error", result.Error.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": result.Error.Error(),
-		})
+		response.Error(c, http.StatusInternalServerError, result.Error.Error())
 		return
 	}
 
 	slog.Info("DeleteTask: task deleted successfully", "task_id", id)
-	c.JSON(http.StatusOK, gin.H{"message": "task deleted successfully"})
+	response.Success(c, http.StatusOK, "task deleted successfully", nil)
 }

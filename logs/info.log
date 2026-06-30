@@ -1,3 +1,4 @@
 {"time":"2026-06-30T02:16:38.3815461+03:30","level":"INFO","msg":"Server starting","port":"8080"}
 {"time":"2026-06-30T02:16:58.4333645+03:30","level":"INFO","msg":"Server starting","port":"8080"}
 {"time":"2026-06-30T02:18:32.4966759+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":8,"title":"test"}
+{"time":"2026-06-30T15:15:28.1475456+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":9,"title":"test2"}
