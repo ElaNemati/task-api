@@ -1,6 +1,10 @@
 package response
 
-import "github.com/gin-gonic/gin"
+import (
+	"task-api/appError"
+
+	"github.com/gin-gonic/gin"
+)
 
 type Response struct {
 	Success    bool        `json:"success"`
@@ -33,5 +37,14 @@ func ValidationError(c *gin.Context, statusCode int, message string, errors inte
 		StatusCode: statusCode,
 		Message:    message,
 		Data:       errors,
+	})
+}
+
+func FromAppError(c *gin.Context, appErr *appError.AppError) {
+	c.JSON(appErr.Status, Response{
+		Success:    false,
+		StatusCode: appErr.Status,
+		Message:    appErr.Message,
+		Data:       nil,
 	})
 }

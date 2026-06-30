@@ -3,6 +3,7 @@ package handlers
 import (
 	"log/slog"
 	"net/http"
+	"task-api/appError"
 	"task-api/database"
 	"task-api/models"
 	"task-api/response"
@@ -36,8 +37,9 @@ func CreateTask(c *gin.Context) {
 	}
 
 	if result := database.DB.Create(&task); result.Error != nil {
+		appErr := appError.FromDBError(result.Error)
 		slog.Error("CreateTask: database error", "error", result.Error.Error())
-		response.Error(c, http.StatusInternalServerError, result.Error.Error())
+		response.FromAppError(c, appErr)
 		return
 	}
 
@@ -49,8 +51,9 @@ func GetAllTasks(c *gin.Context) {
 	var tasks []models.Task
 
 	if result := database.DB.Find(&tasks); result.Error != nil {
+		appErr := appError.FromDBError(result.Error)
 		slog.Error("GetAllTasks: database error", "error", result.Error.Error())
-		response.Error(c, http.StatusInternalServerError, result.Error.Error())
+		response.FromAppError(c, appErr)
 		return
 	}
 
@@ -63,8 +66,9 @@ func GetTaskByID(c *gin.Context) {
 	var task models.Task
 
 	if result := database.DB.First(&task, id); result.Error != nil {
+		appErr := appError.FromDBError(result.Error)
 		slog.Warn("GetTaskByID: task not found", "id", id)
-		response.Error(c, http.StatusNotFound, "task not found")
+		response.FromAppError(c, appErr)
 		return
 	}
 
@@ -77,8 +81,9 @@ func UpdateTask(c *gin.Context) {
 	var task models.Task
 
 	if result := database.DB.First(&task, id); result.Error != nil {
+		appErr := appError.FromDBError(result.Error)
 		slog.Warn("UpdateTask: task not found", "id", id)
-		response.Error(c, http.StatusNotFound, "task not found")
+		response.FromAppError(c, appErr)
 		return
 	}
 
@@ -111,8 +116,9 @@ func UpdateTask(c *gin.Context) {
 	}
 
 	if result := database.DB.Save(&task); result.Error != nil {
+		appErr := appError.FromDBError(result.Error)
 		slog.Error("UpdateTask: database error", "id", id, "error", result.Error.Error())
-		response.Error(c, http.StatusInternalServerError, result.Error.Error())
+		response.FromAppError(c, appErr)
 		return
 	}
 
@@ -125,14 +131,16 @@ func DeleteTask(c *gin.Context) {
 	var task models.Task
 
 	if result := database.DB.First(&task, id); result.Error != nil {
+		appErr := appError.FromDBError(result.Error)
 		slog.Warn("DeleteTask: task not found", "id", id)
-		response.Error(c, http.StatusNotFound, "task not found")
+		response.FromAppError(c, appErr)
 		return
 	}
 
 	if result := database.DB.Delete(&task); result.Error != nil {
+		appErr := appError.FromDBError(result.Error)
 		slog.Error("DeleteTask: database error", "id", id, "error", result.Error.Error())
-		response.Error(c, http.StatusInternalServerError, result.Error.Error())
+		response.FromAppError(c, appErr)
 		return
 	}
 

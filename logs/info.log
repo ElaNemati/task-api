@@ -2,3 +2,6 @@
 {"time":"2026-06-30T02:16:58.4333645+03:30","level":"INFO","msg":"Server starting","port":"8080"}
 {"time":"2026-06-30T02:18:32.4966759+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":8,"title":"test"}
 {"time":"2026-06-30T15:15:28.1475456+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":9,"title":"test2"}
+{"time":"2026-06-30T15:17:56.1856804+03:30","level":"INFO","msg":"Server starting","port":"8080"}
+{"time":"2026-06-30T15:18:11.4479919+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":10,"title":"test2"}
+{"time":"2026-06-30T23:40:32.2239475+03:30","level":"INFO","msg":"Failed to migrate: ERROR: could not create unique index \"uni_tasks_title\" (SQLSTATE 23505)"}
