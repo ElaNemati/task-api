@@ -48,17 +48,67 @@ func CreateTask(c *gin.Context) {
 }
 
 func GetAllTasks(c *gin.Context) {
-	var tasks []models.Task
+	var params models.TaskQueryParams
+	if err := c.ShouldBindQuery(&params); err != nil {
+		response.Error(c, http.StatusBadRequest, "invalid query parameters")
+		return
+	}
 
-	if result := database.DB.Find(&tasks); result.Error != nil {
+	if params.Page < 1 {
+		params.Page = 1
+	}
+	if params.Limit < 1 {
+		params.Limit = 10
+	} else if params.Limit > 100 {
+		params.Limit = 100
+	}
+	if params.Sort != "asc" && params.Sort != "desc" {
+		params.Sort = "desc"
+	}
+
+	if params.Status != "" && !isValidStatus(params.Status) {
+		response.Error(c, http.StatusBadRequest, "status must be 'todo', 'in progress', or 'done'")
+		return
+	}
+
+	var tasks []models.Task
+	var totalCount int64
+
+	db := database.DB.Model(&models.Task{})
+
+	if params.Status != "" {
+		db = db.Where("status = ?", params.Status)
+	}
+
+	db.Count(&totalCount)
+
+	db = db.Order("created_at " + params.Sort)
+
+	offset := (params.Page - 1) * params.Limit
+	db = db.Limit(params.Limit).Offset(offset)
+
+	if result := db.Find(&tasks); result.Error != nil {
 		appErr := appError.FromDBError(result.Error)
 		slog.Error("GetAllTasks: database error", "error", result.Error.Error())
 		response.FromAppError(c, appErr)
 		return
 	}
 
-	slog.Info("GetAllTasks: tasks retrieved", "count", len(tasks))
-	response.Success(c, http.StatusOK, "tasks retrieved successfully", tasks)
+	totalPages := int(totalCount) / params.Limit
+	if int(totalCount)%params.Limit != 0 {
+		totalPages++
+	}
+
+	result := models.PaginatedResponse{
+		Tasks:      tasks,
+		TotalCount: totalCount,
+		Page:       params.Page,
+		Limit:      params.Limit,
+		TotalPages: totalPages,
+	}
+
+	slog.Info("GetAllTasks: tasks retrieved", "count", len(tasks), "total", totalCount)
+	response.Success(c, http.StatusOK, "tasks retrieved successfully", result)
 }
 
 func GetTaskByID(c *gin.Context) {
@@ -146,4 +196,10 @@ func DeleteTask(c *gin.Context) {
 
 	slog.Info("DeleteTask: task deleted successfully", "task_id", id)
 	response.Success(c, http.StatusOK, "task deleted successfully", nil)
+}
+
+func isValidStatus(status models.Status) bool {
+	return status == models.StatusTodo ||
+		status == models.StatusInProgress ||
+		status == models.StatusDone
 }

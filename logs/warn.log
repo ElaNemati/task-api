@@ -1,2 +1,7 @@
 {"time":"2026-06-30T15:16:01.8698718+03:30","level":"WARN","msg":"GetTaskByID: task not found","id":"999"}
 {"time":"2026-06-30T15:18:32.9587089+03:30","level":"WARN","msg":"GetTaskByID: task not found","id":"999"}
+{"time":"2026-06-30T23:51:03.3454683+03:30","level":"WARN","msg":"CreateTask: validation failed","error":"Key: 'Task.Title' Error:Field validation for 'Title' failed on the 'min' tag"}
+{"time":"2026-06-30T23:51:12.9794173+03:30","level":"WARN","msg":"CreateTask: validation failed","error":"Key: 'Task.Title' Error:Field validation for 'Title' failed on the 'required' tag"}
+{"time":"2026-06-30T23:51:20.5127187+03:30","level":"WARN","msg":"CreateTask: validation failed","error":"status must be one of: todo, in progress, done"}
+{"time":"2026-06-30T23:51:28.1913563+03:30","level":"WARN","msg":"GetTaskByID: task not found","id":"9999"}
+{"time":"2026-06-30T23:51:42.465423+03:30","level":"WARN","msg":"UpdateTask: task not found","id":"2"}

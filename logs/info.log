@@ -5,3 +5,18 @@
 {"time":"2026-06-30T15:17:56.1856804+03:30","level":"INFO","msg":"Server starting","port":"8080"}
 {"time":"2026-06-30T15:18:11.4479919+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":10,"title":"test2"}
 {"time":"2026-06-30T23:40:32.2239475+03:30","level":"INFO","msg":"Failed to migrate: ERROR: could not create unique index \"uni_tasks_title\" (SQLSTATE 23505)"}
+{"time":"2026-06-30T23:48:09.8046942+03:30","level":"INFO","msg":"Server starting","port":"8080"}
+{"time":"2026-06-30T23:50:04.0294379+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":1,"title":"unique test"}
+{"time":"2026-06-30T23:51:37.8498712+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":3,"title":"first task"}
+{"time":"2026-06-30T23:51:37.8717205+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":4,"title":"second task"}
+{"time":"2026-07-01T00:12:57.0858633+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":5,"title":"task one"}
+{"time":"2026-07-01T00:12:57.1080978+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":6,"title":"task two"}
+{"time":"2026-07-01T00:12:57.1320889+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":7,"title":"task three"}
+{"time":"2026-07-01T00:12:57.1541893+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":8,"title":"task four"}
+{"time":"2026-07-01T00:12:58.9693663+03:30","level":"INFO","msg":"CreateTask: task created successfully","task_id":9,"title":"task five"}
+{"time":"2026-07-01T00:13:09.1317667+03:30","level":"INFO","msg":"GetAllTasks: tasks retrieved","count":8}
+{"time":"2026-07-01T00:14:35.721628+03:30","level":"INFO","msg":"GetAllTasks: tasks retrieved","count":8}
+{"time":"2026-07-01T00:15:08.8931447+03:30","level":"INFO","msg":"GetAllTasks: tasks retrieved","count":8}
+{"time":"2026-07-01T16:27:46.6265372+03:30","level":"INFO","msg":"GetAllTasks: tasks retrieved","count":8}
+{"time":"2026-07-01T16:28:00.3851982+03:30","level":"INFO","msg":"GetAllTasks: tasks retrieved","count":8}
+{"time":"2026-07-01T16:28:33.9678178+03:30","level":"INFO","msg":"GetAllTasks: tasks retrieved","count":8}
