@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"task-api/appError"
 	"task-api/database"
+	"task-api/dto"
 	"task-api/models"
 	"task-api/response"
 	"task-api/validations"
@@ -13,15 +14,15 @@ import (
 )
 
 func CreateTask(c *gin.Context) {
-	var task models.Task
+	var req dto.CreateTaskRequest
 
-	if err := c.ShouldBindJSON(&task); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		slog.Warn("CreateTask: invalid request body", "error", err.Error())
 		response.Error(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	fieldsErr, err := validations.ValidateCreateTask(&task)
+	fieldsErr, err := validations.ValidateCreateTask(&req)
 	if err != nil {
 		slog.Warn("CreateTask: validation failed", "error", err.Error())
 		if fieldsErr != nil {
@@ -30,6 +31,12 @@ func CreateTask(c *gin.Context) {
 			response.Error(c, http.StatusBadRequest, err.Error())
 		}
 		return
+	}
+
+	task := models.Task{
+		Title:       req.Title,
+		Description: req.Description,
+		Status:      req.Status,
 	}
 
 	if task.Status == "" {
@@ -137,14 +144,15 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	var input models.Task
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var req dto.UpdateTaskRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
 		slog.Warn("UpdateTask: invalid request body", "id", id, "error", err.Error())
 		response.Error(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	fieldsErr, err := validations.ValidateUpdateTask(&input)
+	fieldsErr, err := validations.ValidateUpdateTask(&req)
 	if err != nil {
 		slog.Warn("UpdateTask: validation failed", "id", id, "error", err.Error())
 		if fieldsErr != nil {
@@ -155,14 +163,16 @@ func UpdateTask(c *gin.Context) {
 		return
 	}
 
-	if input.Title != "" {
-		task.Title = input.Title
+	if req.Title != "" {
+		task.Title = req.Title
 	}
-	if input.Description != "" {
-		task.Description = input.Description
+
+	if req.Description != "" {
+		task.Description = req.Description
 	}
-	if input.Status != "" {
-		task.Status = input.Status
+
+	if req.Status != "" {
+		task.Status = req.Status
 	}
 
 	if result := database.DB.Save(&task); result.Error != nil {

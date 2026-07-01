@@ -3,6 +3,7 @@ package validations
 import (
 	"errors"
 	"strings"
+	"task-api/dto"
 	"task-api/models"
 
 	"github.com/go-playground/validator/v10"
@@ -32,7 +33,7 @@ func formatValidationError(err error) map[string]string {
 	return messages
 }
 
-func ValidateCreateTask(task *models.Task) (map[string]string, error) {
+func ValidateCreateTask(task *dto.CreateTaskRequest) (map[string]string, error) {
 	if err := validate.Struct(task); err != nil {
 		return formatValidationError(err), err
 	}
@@ -48,7 +49,7 @@ func ValidateCreateTask(task *models.Task) (map[string]string, error) {
 	return nil, nil
 }
 
-func ValidateUpdateTask(task *models.Task) (map[string]string, error) {
+func ValidateUpdateTask(task *dto.UpdateTaskRequest) (map[string]string, error) {
 	if err := validate.StructPartial(task, "Title", "Description"); err != nil {
 		return formatValidationError(err), err
 	}
